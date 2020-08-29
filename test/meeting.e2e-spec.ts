@@ -12,36 +12,23 @@ import * as supertest from 'supertest';
 
 describe('MeetingController (e2e)', () => {
   let app: INestApplication;
-  const meetingId = uuid.v4();
-  const locationId = uuid.v4();
-  const latitude = faker.address.latitude();
-  const longitude = faker.address.longitude();
+  const location = {
+    id: uuid.v4(),
+    latitude: faker.address.latitude(),
+    longitude: faker.address.longitude(),
+  };
+  const meeting = {
+    id: uuid.v4(),
+    name: 'Meeting to celebrate this test',
+    description: "It's deticated to everyone that uses TDD at its projects",
+    location,
+  };
   const meetingService = {
-    findAll: () => [
-      {
-        id: meetingId,
-        name: 'Meeting to celebrate this test',
-        description: "It's deticated to everyone that uses TDD at its projects",
-        location: {
-          id: locationId,
-          latitude,
-          longitude,
-        },
-      },
-    ],
-    create: () => ({
-      id: meetingId,
-      name: 'Meeting to celebrate this test',
-      description: "It's deticated to everyone that uses TDD at its projects",
-    }),
+    findAll: () => [meeting],
+    create: () => meeting,
   };
   const locationService = {
-    create: () => ({
-      id: locationId,
-      latitude,
-      longitude,
-      meeting: meetingService.create(),
-    }),
+    create: () => location,
   };
 
   beforeAll(async () => {
@@ -82,19 +69,13 @@ describe('MeetingController (e2e)', () => {
   });
 
   it('/POST meetings', async () => {
+    const mockMeeting = meetingService.create();
+
     const { status, body } = await supertest(app.getHttpServer())
       .post('/meetings')
-      .send({
-        name: 'Meeting to celebrate this test',
-        description: "It's deticated to everyone that uses TDD at its projects",
-        latitude,
-        longitude,
-      });
+      .send(mockMeeting);
 
     expect(status).toBe(201);
-    expect(body).toMatchObject({
-      ...meetingService.create(),
-      location: locationService.create(),
-    });
+    expect(body).toMatchObject(mockMeeting);
   });
 });

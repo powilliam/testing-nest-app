@@ -5,6 +5,7 @@ import { Meeting } from './meeting.entity';
 import { Location } from './location/location.entity';
 import { CreateMeetingDTO } from './dto/CreateMeeting.dto';
 import * as uuid from 'uuid';
+import * as faker from 'faker';
 
 describe('Testing MeetingService', () => {
   let moduleRef: TestingModule;
@@ -51,6 +52,11 @@ describe('Testing MeetingService', () => {
 
   describe('create', () => {
     it('should be able to create a meeting', async () => {
+      const location = new Location();
+      location.id = uuid.v4();
+      location.latitude = faker.address.latitude();
+      location.longitude = faker.address.longitude();
+
       const meeting = new Meeting();
       meeting.id = uuid.v4();
       meeting.name = 'Meeting to celebrate this test';
@@ -60,6 +66,7 @@ describe('Testing MeetingService', () => {
       const dto: CreateMeetingDTO = {
         name: meeting.name,
         description: meeting.description,
+        location,
       };
 
       jest

@@ -5,7 +5,7 @@ import { LocationModule } from './location/location.module';
 import { Meeting } from './meeting.entity';
 import { Location } from './location/location.entity';
 import { MeetingController } from './meeting.controller';
-import { ICreateMetting } from './interfaces/CreateMeeting';
+import { CreateMeetingDTO } from './dto/CreateMeeting.dto';
 import * as uuid from 'uuid';
 import * as faker from 'faker';
 
@@ -35,11 +35,17 @@ describe('Testing MeetingController', () => {
 
   describe('index', () => {
     it('should be able to list all meetings', async () => {
+      const location = new Location();
+      location.id = uuid.v4();
+      location.latitude = faker.address.latitude();
+      location.longitude = faker.address.longitude();
+
       const meeting = new Meeting();
       meeting.id = uuid.v4();
       meeting.name = 'Meeting to celebrate this test';
       meeting.description =
         "It's deticated to everyone that uses TDD at its projects";
+      meeting.location = location;
 
       const result = [meeting];
       jest
@@ -51,31 +57,28 @@ describe('Testing MeetingController', () => {
 
   describe('create', () => {
     it('should be able to create a meeting related to a location', async () => {
+      const location = new Location();
+      location.id = uuid.v4();
+      location.latitude = faker.address.latitude();
+      location.longitude = faker.address.longitude();
+
       const meeting = new Meeting();
       meeting.id = uuid.v4();
       meeting.name = 'Meeting to celebrate this test';
       meeting.description =
         "It's deticated to everyone that uses TDD at its projects";
+      meeting.location = location;
 
-      const location = new Location();
-      location.id = uuid.v4();
-      location.latitude = faker.address.latitude();
-      location.longitude = faker.address.longitude();
-      location.meeting = meeting;
-
-      const dto: ICreateMetting = {
+      const dto: CreateMeetingDTO = {
         name: meeting.name,
         description: meeting.description,
-        latitude: location.latitude,
-        longitude: location.longitude,
+        location,
       };
-
-      const expectedResponse = { ...meeting, location };
 
       jest
         .spyOn(meetingController, 'create')
-        .mockImplementation(async () => expectedResponse);
-      expect(await meetingController.create(dto)).toBe(expectedResponse);
+        .mockImplementation(async () => meeting);
+      expect(await meetingController.create(dto)).toBe(meeting);
     });
   });
 

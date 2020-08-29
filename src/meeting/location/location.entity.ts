@@ -1,5 +1,4 @@
-import { Entity, PrimaryColumn, Column, OneToOne, JoinColumn } from 'typeorm';
-import { Meeting } from '../meeting.entity';
+import { Entity, PrimaryColumn, Column } from 'typeorm';
 
 @Entity()
 export class Location {
@@ -11,12 +10,4 @@ export class Location {
 
   @Column({ nullable: false })
   public longitude: string;
-
-  @OneToOne(
-    () => Meeting,
-    meeting => meeting.location,
-    { onUpdate: 'CASCADE', onDelete: 'CASCADE' },
-  )
-  @JoinColumn()
-  public meeting: Meeting;
 }
