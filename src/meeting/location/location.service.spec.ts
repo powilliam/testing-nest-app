@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { getRepositoryToken } from '@nestjs/typeorm';
 import { LocationService } from './location.service';
 import { Location } from './location.entity';
 import { CreateLocationDTO } from './dto/CreateLocation.dto';
@@ -12,17 +12,10 @@ describe('Testing LocationService', () => {
 
   beforeAll(async () => {
     moduleRef = await Test.createTestingModule({
-      imports: [
-        TypeOrmModule.forRoot({
-          type: 'postgres',
-          url:
-            'postgres://development:development@localhost:5432/nest-app-test',
-          entities: [Location],
-          synchronize: true,
-        }),
-        TypeOrmModule.forFeature([Location]),
+      providers: [
+        LocationService,
+        { provide: getRepositoryToken(Location), useValue: {} },
       ],
-      providers: [LocationService],
     }).compile();
 
     locationService = moduleRef.get<LocationService>(LocationService);

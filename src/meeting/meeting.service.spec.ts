@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { getRepositoryToken } from '@nestjs/typeorm';
 import { MeetingService } from './meeting.service';
 import { Meeting } from './meeting.entity';
 import { Location } from './location/location.entity';
@@ -13,17 +13,11 @@ describe('Testing MeetingService', () => {
 
   beforeAll(async () => {
     moduleRef = await Test.createTestingModule({
-      imports: [
-        TypeOrmModule.forRoot({
-          type: 'postgres',
-          url:
-            'postgres://development:development@localhost:5432/nest-app-test',
-          entities: [Meeting, Location],
-          synchronize: true,
-        }),
-        TypeOrmModule.forFeature([Meeting]),
+      providers: [
+        MeetingService,
+        { provide: getRepositoryToken(Meeting), useValue: {} },
+        { provide: getRepositoryToken(Location), useValue: {} },
       ],
-      providers: [MeetingService],
     }).compile();
 
     meetingService = moduleRef.get<MeetingService>(MeetingService);

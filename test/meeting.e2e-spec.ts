@@ -1,7 +1,7 @@
 import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { MeetingModule } from '../src/meeting/meeting.module';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { MeetingController } from '../src/meeting/meeting.controller';
 import { MeetingService } from '../src/meeting/meeting.service';
 import { LocationService } from '../src/meeting/location/location.service';
 import { Meeting } from '../src/meeting/meeting.entity';
@@ -33,16 +33,8 @@ describe('MeetingController (e2e)', () => {
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
-      imports: [
-        TypeOrmModule.forRoot({
-          type: 'postgres',
-          url:
-            'postgres://development:development@localhost:5432/nest-app-test',
-          entities: [Meeting, Location],
-          synchronize: true,
-        }),
-        MeetingModule,
-      ],
+      controllers: [MeetingController],
+      providers: [MeetingService, LocationService],
     })
       .overrideProvider(MeetingService)
       .useValue(meetingService)
